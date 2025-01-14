@@ -3,13 +3,12 @@ import argparse
 import torch
 
 from exp.exp import Exp
-from utils.seed import setSeed
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--dataset', type=str, default='SMD', help='dataset')
-    parser.add_argument('--data_dir', type=str, default='./dataset/', help='path of the data')
+    parser.add_argument('--dataset', type=str, default='PSM', help='dataset')
+    parser.add_argument('--data_dir', type=str, default='./data/dataset/', help='path of the data')
     parser.add_argument('--model_dir', type=str, default='./checkpoint/', help='path of the checkpoint')
 
     parser.add_argument('--itr', type=int, default=5, help='num of evaluation')
@@ -44,10 +43,10 @@ if __name__ == '__main__':
     parser.add_argument('--gpu_id', type=int, default=0, help='device ids of gpus')
 
     config = vars(parser.parse_args())
-    setSeed(config['random_seed'])
-    torch.cuda.set_device(config['gpu_id'])
+    # 如果有GPU就取消注释
+    #torch.cuda.set_device(config['gpu_id'])
 
     for ii in range(config['itr']):
         exp = Exp(config)
         exp.train()
-        exp.test()
+        # exp.test()

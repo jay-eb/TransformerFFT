@@ -55,7 +55,8 @@ class DynamicDecomposition(nn.Module):
         self.data_encoder = DataEncoder(window_size, model_dim, ff_dim, atten_dim, feature_num, block_num,
                                         head_num, dropout)
         self.time_encoder = TimeEncoder(model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout)
-        self.period_encoder = TimeEncoder(model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout)
+        self.period_encoder = DataEncoder(window_size, model_dim, ff_dim, atten_dim, feature_num, block_num,
+                                        head_num, dropout)
 
         self.decomposition_blocks = nn.ModuleList()
         for i in range(block_num):

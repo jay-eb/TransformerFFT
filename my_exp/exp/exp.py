@@ -10,8 +10,8 @@ from tqdm import tqdm
 from my_exp.data.dataset import Dataset
 from my_exp.data.preprocess import getData
 from my_exp.model.TransformerFFT import TransformerFFT
-from utils.earlystop import EarlyStop
-from utils.evaluate import evaluate
+from my_exp.utils.earlystop import EarlyStop
+# from utils.evaluate import evaluate
 
 
 class Exp:
@@ -94,21 +94,27 @@ class Exp:
         ).to(self.device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=1e-4)
         self.early_stopping = EarlyStop(patience=self.patience, path=self.model_dir + self.dataset + '_model.pkl')
-        self.criterion = nn.MSELoss(reduction='mean')
+        # 使用交叉熵损失, 监督学习
+        self.criterion = nn.CrossEntropyLoss()
+        # 训练时不带标签，无监督学习
+        # self.criterion = nn.MSELoss(reduction='mean')
 
-    def _process_one_batch(self, batch_data, batch_time, batch_stable, train):
+    def _process_one_batch(self, batch_data, batch_time, batch_stable, batch_label, train):
         batch_data = batch_data.float().to(self.device)
         batch_time = batch_time.float().to(self.device)
         batch_stable = batch_stable.float().to(self.device)
+        batch_label = batch_label.long().to(self.device)
 
         if train:
-            stable, _, recon = self.model(batch_data, batch_time, self.p)
-            loss = 0.5 * self.criterion(stable, batch_stable) + \
-                   0.5 * self.criterion(recon, batch_data)
+            # 趋势， 周期， 时间
+            stable = self.model(batch_stable, batch_data, batch_time, self.p)
+            stable = stable.permute(0, 2, 1)
+            batch_label = batch_label.squeeze(-1)
+            loss = self.criterion(stable, batch_label)
             return loss
         else:
-            stable, trend, recon = self.model(batch_data, batch_time, 0.00)
-            return stable, trend, recon
+            stable = self.model(batch_stable, batch_data, batch_time, 0.00)
+            return stable
 
     def train(self):
         for e in range(self.epochs):
@@ -116,9 +122,9 @@ class Exp:
 
             self.model.train()
             train_loss = []
-            for (batch_data, batch_time, batch_stable, _) in tqdm(self.train_loader):
+            for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.train_loader):
                 self.optimizer.zero_grad()
-                loss = self._process_one_batch(batch_data, batch_time, batch_stable, train=True)
+                loss = self._process_one_batch(batch_data, batch_time, batch_stable, batch_label, train=True)
                 train_loss.append(loss.item())
                 loss.backward()
                 self.optimizer.step()
@@ -126,8 +132,8 @@ class Exp:
             with torch.no_grad():
                 self.model.eval()
                 valid_loss = []
-                for (batch_data, batch_time, batch_stable, _) in tqdm(self.valid_loader):
-                    loss = self._process_one_batch(batch_data, batch_time, batch_stable, train=True)
+                for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.valid_loader):
+                    loss = self._process_one_batch(batch_data, batch_time, batch_stable, batch_label, train=True)
                     valid_loss.append(loss.item())
 
             train_loss, valid_loss = np.average(train_loss), np.average(valid_loss)
@@ -170,7 +176,7 @@ class Exp:
         init_score = np.mean(init_mse, axis=-1, keepdims=True)
         test_score = np.mean(test_mse, axis=-1, keepdims=True)
 
-        res = evaluate(init_score.reshape(-1), test_score.reshape(-1), test_label.reshape(-1), q=self.q)
+        # res = evaluate(init_score.reshape(-1), test_score.reshape(-1), test_label.reshape(-1), q=self.q)
         print("\n=============== " + self.dataset + " ===============")
-        print(f"P: {res['precision']:.4f} || R: {res['recall']:.4f} || F1: {res['f1_score']:.4f}")
+        # print(f"P: {res['precision']:.4f} || R: {res['recall']:.4f} || F1: {res['f1_score']:.4f}")
         print("=============== " + self.dataset + " ===============\n")

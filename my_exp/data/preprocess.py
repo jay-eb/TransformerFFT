@@ -65,13 +65,20 @@ def getNdFFT(data, topK=3):
     return x_season, x_trend
 
 
-def getData(path='./dataset/', dataset='PSM', topK=5, train_rate=0.8):
-    init_data = np.load(path + dataset + '/' + dataset + '_train_data.npy')
-    init_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_train_date.npy'))
+def getData(path='./dataset/', dataset='PSM', topK=5, train_rate=0.8, split_test_rate=0.2):
+    # init_data = np.load(path + dataset + '/' + dataset + '_train_data.npy')
+    # init_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_train_date.npy'))
 
-    test_data = np.load(path + dataset + '/' + dataset + '_test_data.npy')
-    test_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_test_date.npy'))
-    test_label = np.load(path + dataset + '/' + dataset + '_test_label.npy')
+    origin_data = np.load(path + dataset + '/' + dataset + '_test_data.npy')
+    origin_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_test_date.npy'))
+    origin_label = np.load(path + dataset + '/' + dataset + '_test_label.npy')
+    num_train_samples = int(len(origin_data) * (1 - split_test_rate))
+    init_data = origin_data[:num_train_samples]
+    init_time = origin_time[:num_train_samples]
+    init_label = origin_label[:num_train_samples]
+    test_data = origin_data[num_train_samples:]
+    test_time = origin_time[num_train_samples:]
+    test_label = origin_label[num_train_samples:]
     # 标准化处理，使得每个特征的均值为0，标准差为1
     scaler = StandardScaler()
     scaler.fit(init_data)
@@ -80,8 +87,15 @@ def getData(path='./dataset/', dataset='PSM', topK=5, train_rate=0.8):
 
     init_data, init_stable = getNdFFT(init_data, topK=topK)
     # 如果是滑动平均，要对时间裁剪 init_time = init_time[period // 2:-period // 2, :]
-    init_label = np.zeros((len(init_data), 1)) # 初始化标签，都是0，即正常的
+    # init_label = np.zeros((len(init_data), 1)) # 初始化标签，都是0，即正常的
     test_stable = np.zeros_like(test_data)
+
+    # # 从 test 数据集中抽取一部分作为 train 数据集
+    # num_train_samples = int(len(test_data) * (1 - split_test_rate))
+    # new_train_data = test_data[:num_train_samples]
+    # new_train_time = test_time[:num_train_samples]
+    # new_train_label = test_label[:num_train_samples]
+    # new_train_stable = test_stable[:num_train_samples]
 
     # 数据集拆分训练集和验证集
     train_data = init_data[:int(train_rate * len(init_data)), :]
