@@ -59,6 +59,7 @@ class DynamicDecomposition(nn.Module):
                                         head_num, dropout)
 
         self.decomposition_blocks = nn.ModuleList()
+        self.fc = nn.Linear(feature_num, 2)
         for i in range(block_num):
             dp = 0 if i == block_num - 1 else dropout
             self.decomposition_blocks.append(
@@ -76,5 +77,6 @@ class DynamicDecomposition(nn.Module):
         for block in self.decomposition_blocks:
             tmp_stable = block(data, period, time)
             stable = stable + tmp_stable
-
+        # 最后一层FC用于二分类
+        stable = self.fc(stable)
         return stable
