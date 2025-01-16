@@ -93,6 +93,9 @@ class DecompositionBlock(nn.Module):
         self.mixed_attention = MixAttention2(model_dim, atten_dim, head_num, dropout, False)
         self.ordinary_attention = OrdAttention(model_dim, atten_dim, head_num, dropout, True)
 
+        self.mixed_attention1 = MixAttention2(model_dim, atten_dim, head_num, dropout, False)
+        self.ordinary_attention1 = OrdAttention(model_dim, atten_dim, head_num, dropout, True)
+
         self.conv1 = nn.Conv1d(in_channels=model_dim, out_channels=ff_dim, kernel_size=(1,))
         self.conv2 = nn.Conv1d(in_channels=ff_dim, out_channels=model_dim, kernel_size=(1,))
         nn.init.kaiming_normal_(self.conv1.weight, mode="fan_in", nonlinearity="leaky_relu")
@@ -117,9 +120,9 @@ class DecompositionBlock(nn.Module):
 
     def forward(self, trend, period, time):
         trendMixed = self.mixed_attention(trend, time, trend, time, time)
-        periodMixed = self.mixed_attention(period, time, period, time, time)
+        periodMixed = self.mixed_attention1(period, time, period, time, time)
         trend = self.ordinary_attention(trendMixed, trendMixed, trendMixed)
-        period = self.ordinary_attention(periodMixed, periodMixed, periodMixed)
+        period = self.ordinary_attention1(periodMixed, periodMixed, periodMixed)
 
         residual = trend.clone()
         trend = self.activation(self.conv1(trend.permute(0, 2, 1)))

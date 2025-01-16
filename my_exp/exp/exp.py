@@ -13,6 +13,10 @@ from my_exp.data.preprocess import getData, getData2
 from my_exp.model.TransformerFFT import TransformerFFT
 from my_exp.utils.earlystop import EarlyStop
 from sklearn.metrics import precision_score, recall_score, f1_score
+
+from my_exp.utils.evaluate import evaluate
+
+
 # from utils.evaluate import evaluate
 
 
@@ -117,8 +121,8 @@ class Exp:
                    0.5 * self.criterion(period, batch_data)
             return loss
         else:
-            stable = self.model(batch_stable, batch_data, batch_time, 0.00)
-            return stable
+            trend, period = self.model(batch_stable, batch_data, batch_time, 0.00)
+            return trend + period
 
     def train(self):
         for e in range(self.epochs):
@@ -150,40 +154,77 @@ class Exp:
 
         self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl'))
 
+    # def test(self):
+    #     # 加载训练好的模型
+    #     self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl', map_location=torch.device('cpu')))
+    #
+    #     with torch.no_grad():
+    #         self.model.eval()
+    #         test_labels = []
+    #         test_preds = []
+    #
+    #         for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.test_loader):
+    #             # 将数据移动到设备
+    #             batch_data = batch_data.float().to(self.device)
+    #             batch_time = batch_time.float().to(self.device)
+    #             batch_stable = batch_stable.float().to(self.device)
+    #             batch_label = batch_label.long().to(self.device)
+    #
+    #             # 模型预测
+    #             stable = self.model(batch_stable, batch_data, batch_time, 0.00)
+    #             probabilities = F.softmax(stable, dim=1)
+    #             preds = torch.argmax(probabilities, dim=2)  # 获取每个样本的预测类别（argmax 取概率最大的类别）
+    #
+    #             # 保存真实标签和预测值
+    #             test_labels.append(batch_label.squeeze(-1).detach().cpu().numpy())
+    #             test_preds.append(preds.detach().cpu().numpy())
+    #
+    #     # 将所有批次的结果合并
+    #     test_labels = np.concatenate(test_labels, axis=0).reshape(-1)
+    #     test_preds = np.concatenate(test_preds, axis=0).reshape(-1)
+    #
+    #     # 计算 Precision、Recall 和 F1-score
+    #     precision = precision_score(test_labels, test_preds, average='binary')  # 二分类情况
+    #     recall = recall_score(test_labels, test_preds, average='binary')
+    #     f1 = f1_score(test_labels, test_preds, average='binary')
+    #
+    #     print("\n=============== Evaluation Results ===============")
+    #     print(f"Precision: {precision:.4f} || Recall: {recall:.4f} || F1-Score: {f1:.4f}")
+    #     print("==================================================\n")
+
     def test(self):
-        # 加载训练好的模型
         self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl', map_location=torch.device('cpu')))
 
         with torch.no_grad():
             self.model.eval()
-            test_labels = []
-            test_preds = []
+            init_src, init_rec = [], []
+            for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.init_loader):
+                recon = self._process_one_batch(batch_data, batch_time, batch_stable, train=False)
+                init_src.append(batch_data.detach().cpu().numpy()[:, -1, :])
+                init_rec.append(recon.detach().cpu().numpy()[:, -1, :])
+                break
 
+            test_label, test_src, test_rec = [], [], []
             for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.test_loader):
-                # 将数据移动到设备
-                batch_data = batch_data.float().to(self.device)
-                batch_time = batch_time.float().to(self.device)
-                batch_stable = batch_stable.float().to(self.device)
-                batch_label = batch_label.long().to(self.device)
+                recon = self._process_one_batch(batch_data, batch_time, batch_stable, train=False)
+                test_label.append(batch_label.detach().cpu().numpy()[:, -1, :])
+                test_src.append(batch_data.detach().cpu().numpy()[:, -1, :])
+                test_rec.append(recon.detach().cpu().numpy()[:, -1, :])
+                break
 
-                # 模型预测
-                stable = self.model(batch_stable, batch_data, batch_time, 0.00)
-                probabilities = F.softmax(stable, dim=1)
-                preds = torch.argmax(probabilities, dim=2)  # 获取每个样本的预测类别（argmax 取概率最大的类别）
+        init_src = np.concatenate(init_src, axis=0)
+        init_rec = np.concatenate(init_rec, axis=0)
+        init_mse = (init_src - init_rec) ** 2
 
-                # 保存真实标签和预测值
-                test_labels.append(batch_label.squeeze(-1).detach().cpu().numpy())
-                test_preds.append(preds.detach().cpu().numpy())
+        test_label = np.concatenate(test_label, axis=0)
+        test_src = np.concatenate(test_src, axis=0)
+        test_rec = np.concatenate(test_rec, axis=0)
+        test_mse = (test_src - test_rec) ** 2
 
-        # 将所有批次的结果合并
-        test_labels = np.concatenate(test_labels, axis=0).reshape(-1)
-        test_preds = np.concatenate(test_preds, axis=0).reshape(-1)
+        init_score = np.mean(init_mse, axis=-1, keepdims=True)
+        test_score = np.mean(test_mse, axis=-1, keepdims=True)
 
-        # 计算 Precision、Recall 和 F1-score
-        precision = precision_score(test_labels, test_preds, average='binary')  # 二分类情况
-        recall = recall_score(test_labels, test_preds, average='binary')
-        f1 = f1_score(test_labels, test_preds, average='binary')
-
-        print("\n=============== Evaluation Results ===============")
-        print(f"Precision: {precision:.4f} || Recall: {recall:.4f} || F1-Score: {f1:.4f}")
-        print("==================================================\n")
+        res = evaluate(init_score.reshape(-1), test_score.reshape(-1), test_label.reshape(-1), q=self.q)
+        print("\n=============== " + self.dataset + " ===============")
+        print(f"P: {res['precision']:.4f} || R: {res['recall']:.4f} || F1: {res['f1_score']:.4f}")
+        print("=============== " + self.dataset + " ===============\n")
