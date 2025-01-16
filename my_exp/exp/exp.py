@@ -105,11 +105,10 @@ class Exp:
         # 训练时不带标签，无监督学习
         self.criterion = nn.MSELoss(reduction='mean')
 
-    def _process_one_batch(self, batch_data, batch_time, batch_stable, batch_label, train):
+    def _process_one_batch(self, batch_data, batch_time, batch_stable, train):
         batch_data = batch_data.float().to(self.device)
         batch_time = batch_time.float().to(self.device)
         batch_stable = batch_stable.float().to(self.device)
-        batch_label = batch_label.long().to(self.device)
 
         if train:
             # 趋势， 周期， 时间
@@ -202,7 +201,6 @@ class Exp:
                 recon = self._process_one_batch(batch_data, batch_time, batch_stable, train=False)
                 init_src.append(batch_data.detach().cpu().numpy()[:, -1, :])
                 init_rec.append(recon.detach().cpu().numpy()[:, -1, :])
-                break
 
             test_label, test_src, test_rec = [], [], []
             for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.test_loader):
@@ -210,7 +208,6 @@ class Exp:
                 test_label.append(batch_label.detach().cpu().numpy()[:, -1, :])
                 test_src.append(batch_data.detach().cpu().numpy()[:, -1, :])
                 test_rec.append(recon.detach().cpu().numpy()[:, -1, :])
-                break
 
         init_src = np.concatenate(init_src, axis=0)
         init_rec = np.concatenate(init_rec, axis=0)
