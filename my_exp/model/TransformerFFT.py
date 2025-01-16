@@ -26,6 +26,6 @@ class TransformerFFT(nn.Module):
             d=d
         )
 
-    def forward(self, trend, period, time, p=0):
-        trend_s, period_s = self.dynamic_decomposition(trend, period, time)
-        return trend_s, period_s
+    def forward(self, data, period, time, p=0):
+        stable = self.dynamic_decomposition(data, period, time)
+        return stable

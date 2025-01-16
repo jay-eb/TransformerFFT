@@ -90,27 +90,16 @@ class SpatialTemporalTransformerBlock(nn.Module):
 class DecompositionBlock(nn.Module):
     def __init__(self, model_dim, ff_dim, atten_dim, feature_num, head_num, dropout):
         super(DecompositionBlock, self).__init__()
-        self.mixed_attention = MixAttention2(model_dim, atten_dim, head_num, dropout, False)
+        self.mixed_attention = MixAttention(model_dim, atten_dim, head_num, dropout, False)
         self.ordinary_attention = OrdAttention(model_dim, atten_dim, head_num, dropout, True)
-
-        self.mixed_attention1 = MixAttention2(model_dim, atten_dim, head_num, dropout, False)
-        self.ordinary_attention1 = OrdAttention(model_dim, atten_dim, head_num, dropout, True)
 
         self.conv1 = nn.Conv1d(in_channels=model_dim, out_channels=ff_dim, kernel_size=(1,))
         self.conv2 = nn.Conv1d(in_channels=ff_dim, out_channels=model_dim, kernel_size=(1,))
         nn.init.kaiming_normal_(self.conv1.weight, mode="fan_in", nonlinearity="leaky_relu")
         nn.init.kaiming_normal_(self.conv2.weight, mode="fan_in", nonlinearity="leaky_relu")
 
-        self.conv3 = nn.Conv1d(in_channels=model_dim, out_channels=ff_dim, kernel_size=(1,))
-        self.conv4 = nn.Conv1d(in_channels=ff_dim, out_channels=model_dim, kernel_size=(1,))
-        nn.init.kaiming_normal_(self.conv3.weight, mode="fan_in", nonlinearity="leaky_relu")
-        nn.init.kaiming_normal_(self.conv4.weight, mode="fan_in", nonlinearity="leaky_relu")
-
         self.fc1 = nn.Linear(model_dim, ff_dim, bias=True)
         self.fc2 = nn.Linear(ff_dim, feature_num, bias=True)
-
-        self.fc3 = nn.Linear(model_dim, ff_dim, bias=True)
-        self.fc4 = nn.Linear(ff_dim, feature_num, bias=True)
 
         self.dropout = nn.Dropout(dropout)
         self.activation = F.gelu
@@ -119,21 +108,13 @@ class DecompositionBlock(nn.Module):
         self.norm2 = nn.LayerNorm(model_dim)
 
     def forward(self, trend, period, time):
-        trendMixed = self.mixed_attention(trend, time, trend, time, time)
-        periodMixed = self.mixed_attention1(period, time, period, time, time)
-        trend = self.ordinary_attention(trendMixed, trendMixed, trendMixed)
-        period = self.ordinary_attention1(periodMixed, periodMixed, periodMixed)
+        mixed = self.mixed_attention(trend, period, time, trend, period, time, time)
+        stable = self.ordinary_attention(mixed, mixed, mixed)
 
-        residual = trend.clone()
-        trend = self.activation(self.conv1(trend.permute(0, 2, 1)))
-        trend = self.dropout(self.conv2(trend).permute(0, 2, 1))
-        trend = self.norm1(trend + residual)
-        trend = self.fc2(self.activation(self.fc1(trend)))
+        residual = stable.clone()
+        stable = self.activation(self.conv1(stable.permute(0, 2, 1)))
+        stable = self.dropout(self.conv2(stable).permute(0, 2, 1))
+        stable = self.norm1(stable + residual)
+        stable = self.fc2(self.activation(self.fc1(stable)))
 
-        residual2 = period.clone()
-        period = self.activation(self.conv3(period.permute(0, 2, 1)))
-        period = self.dropout(self.conv4(period).permute(0, 2, 1))
-        period = self.norm2(period + residual2)
-        period = self.fc4(self.activation(self.fc3(period)))
-
-        return period, trend
+        return stable
