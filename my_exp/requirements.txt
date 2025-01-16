@@ -7,3 +7,5 @@ pandas
 pyyaml
 
 torch
+
+tqdm

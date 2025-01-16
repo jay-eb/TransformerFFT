@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 from my_exp.data.dataset import Dataset
-from my_exp.data.preprocess import getData
+from my_exp.data.preprocess import getData, getData2
 from my_exp.model.TransformerFFT import TransformerFFT
 from my_exp.utils.earlystop import EarlyStop
 from sklearn.metrics import precision_score, recall_score, f1_score
@@ -26,7 +26,7 @@ class Exp:
             os.makedirs(self.model_dir)
 
     def _get_data(self):
-        data = getData(
+        data = getData2(
             path=self.data_dir,
             dataset=self.dataset,
             topK=self.topK,
@@ -97,9 +97,9 @@ class Exp:
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=1e-4)
         self.early_stopping = EarlyStop(patience=self.patience, path=self.model_dir + self.dataset + '_model.pkl')
         # 使用交叉熵损失, 监督学习
-        self.criterion = nn.CrossEntropyLoss()
+        # self.criterion = nn.CrossEntropyLoss()
         # 训练时不带标签，无监督学习
-        # self.criterion = nn.MSELoss(reduction='mean')
+        self.criterion = nn.MSELoss(reduction='mean')
 
     def _process_one_batch(self, batch_data, batch_time, batch_stable, batch_label, train):
         batch_data = batch_data.float().to(self.device)
@@ -109,10 +109,12 @@ class Exp:
 
         if train:
             # 趋势， 周期， 时间
-            stable = self.model(batch_stable, batch_data, batch_time, self.p)
-            stable = stable.permute(0, 2, 1)
-            batch_label = batch_label.squeeze(-1)
-            loss = self.criterion(stable, batch_label)
+            trend, period = self.model(batch_stable, batch_data, batch_time, self.p)
+            # stable = stable.permute(0, 2, 1)
+            # batch_label = batch_label.squeeze(-1)
+            # loss = self.criterion(stable, batch_label)
+            loss = 0.5 * self.criterion(trend, batch_stable) + \
+                   0.5 * self.criterion(period, batch_data)
             return loss
         else:
             stable = self.model(batch_stable, batch_data, batch_time, 0.00)
@@ -150,7 +152,7 @@ class Exp:
 
     def test(self):
         # 加载训练好的模型
-        self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl'))
+        self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl', map_location=torch.device('cpu')))
 
         with torch.no_grad():
             self.model.eval()
@@ -167,15 +169,15 @@ class Exp:
                 # 模型预测
                 stable = self.model(batch_stable, batch_data, batch_time, 0.00)
                 probabilities = F.softmax(stable, dim=1)
-                preds = torch.argmax(probabilities, dim=1)  # 获取每个样本的预测类别（argmax 取概率最大的类别）
+                preds = torch.argmax(probabilities, dim=2)  # 获取每个样本的预测类别（argmax 取概率最大的类别）
 
                 # 保存真实标签和预测值
                 test_labels.append(batch_label.squeeze(-1).detach().cpu().numpy())
                 test_preds.append(preds.detach().cpu().numpy())
 
         # 将所有批次的结果合并
-        test_labels = np.concatenate(test_labels, axis=0)
-        test_preds = np.concatenate(test_preds, axis=0)
+        test_labels = np.concatenate(test_labels, axis=0).reshape(-1)
+        test_preds = np.concatenate(test_preds, axis=0).reshape(-1)
 
         # 计算 Precision、Recall 和 F1-score
         precision = precision_score(test_labels, test_preds, average='binary')  # 二分类情况

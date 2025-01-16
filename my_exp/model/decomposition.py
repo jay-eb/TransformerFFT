@@ -66,17 +66,20 @@ class DynamicDecomposition(nn.Module):
                 DecompositionBlock(model_dim, ff_dim, atten_dim, feature_num, head_num, dp)
             )
 
-    def forward(self, data, period, time):
-        residual = data.clone()
+    def forward(self, trend, period, time):
+        residual = trend.clone()
+        residual2 = period.clone()
 
-        data = self.data_encoder(data)
+        trend = self.data_encoder(trend)
         time = self.time_encoder(time)
         period = self.period_encoder(period)
-        stable = torch.zeros_like(residual).to(data.device)
+        trend_re = torch.zeros_like(residual).to(trend.device)
+        period_re = torch.zeros_like(residual2).to(period.device)
+
 
         for block in self.decomposition_blocks:
-            tmp_stable = block(data, period, time)
-            stable = stable + tmp_stable
-        # 最后一层FC用于二分类
-        stable = self.fc(stable)
-        return stable
+            tmp_preiod, tmp_trend = block(trend, period, time)
+            period_re = period_re + tmp_preiod
+            trend_re = trend_re + tmp_trend
+
+        return trend_re, period_re

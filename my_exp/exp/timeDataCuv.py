@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 1. 加载数据
-data_file = "train_data.npy"  # 数据文件路径
-date_file = "train_date.npy"  # 时间文件路径
+data_file = "../data/dataset/PSM/PSM_test_data.npy"  # 数据文件路径
+date_file = "../data/dataset/PSM/PSM_test_date.npy"  # 时间文件路径
 data = np.load(data_file)  # (num_timesteps, num_features)
 dates = np.load(date_file)  # (num_timesteps,)
 
@@ -21,6 +21,7 @@ assert data.shape[0] == dates.shape[0], "时间和特征数据长度不一致！
 plt.figure(figsize=(14, 7))  # 调整画布大小
 
 num_features = data.shape[1]
+dates = dates.flatten()
 for i in range(num_features):
     plt.plot(dates, data[:, i], label=f"Feature {i+1}")  # 每个特征绘制一条曲线
 
@@ -32,4 +33,4 @@ plt.legend(loc="best")  # 显示图例
 plt.grid(True)  # 添加网格
 plt.tight_layout()  # 自动调整布局
 plt.xticks(rotation=45)  # x轴标签旋转45度，防止重叠
-plt.show()  # 显示图形
+plt.savefig("1.png")

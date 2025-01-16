@@ -64,6 +64,41 @@ def getNdFFT(data, topK=3):
         x_trend[:, i] = x - x_season[:, i]
     return x_season, x_trend
 
+def getData2(path='./dataset/', dataset='PSM', topK=5, train_rate=0.8, split_test_rate=0.2):
+    init_data = np.load(path + dataset + '/' + dataset + '_train_data.npy')
+    init_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_train_date.npy'))
+
+    test_data = np.load(path + dataset + '/' + dataset + '_test_data.npy')
+    test_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_test_date.npy'))
+    test_label = np.load(path + dataset + '/' + dataset + '_test_label.npy')
+    # 标准化处理，使得每个特征的均值为0，标准差为1
+    scaler = StandardScaler()
+    scaler.fit(init_data)
+    init_data = pd.DataFrame(scaler.transform(init_data)).fillna(0).values
+    test_data = pd.DataFrame(scaler.transform(test_data)).fillna(0).values
+
+    init_data, init_stable = getNdFFT(init_data, topK=topK)
+    init_label = np.zeros((len(init_data), 1))
+    test_stable = np.zeros_like(test_data)
+
+    train_data = init_data[:int(train_rate * len(init_data)), :]
+    train_time = init_time[:int(train_rate * len(init_time)), :]
+    train_stable = init_stable[:int(train_rate * len(init_stable)), :]
+    train_label = init_label[:int(train_rate * len(init_label)), :]
+
+    valid_data = init_data[int(train_rate * len(init_data)):, :]
+    valid_time = init_time[int(train_rate * len(init_time)):, :]
+    valid_stable = init_stable[int(train_rate * len(init_stable)):, :]
+    valid_label = init_label[int(train_rate * len(init_label)):, :]
+
+    data = {
+        'train_data': train_data, 'train_time': train_time, 'train_stable': train_stable, 'train_label': train_label,
+        'valid_data': valid_data, 'valid_time': valid_time, 'valid_stable': valid_stable, 'valid_label': valid_label,
+        'init_data': init_data, 'init_time': init_time, 'init_stable': init_stable, 'init_label': init_label,
+        'test_data': test_data, 'test_time': test_time, 'test_stable': test_stable, 'test_label': test_label
+    }
+
+    return data
 
 def getData(path='./dataset/', dataset='PSM', topK=5, train_rate=0.8, split_test_rate=0.2):
     # init_data = np.load(path + dataset + '/' + dataset + '_train_data.npy')
