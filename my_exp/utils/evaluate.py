@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.metrics import classification_report, precision_score, f1_score, recall_score
+# from sklearn.metrics import classification_report, precision_score, f1_score, recall_score
 
 from my_exp.utils.affiliation.generics import convert_vector_to_events
 from my_exp.utils.affiliation.metrics import pr_from_events
@@ -43,13 +43,13 @@ def evaluate(init_score, test_score, test_label=None, q=1e-2):
     res['test_pred'] = test_pred
 
     if test_label is not None:
-        # precision, recall, f1_score = getAffiliationMetrics(test_label.copy(), test_pred.copy())
+        precision, recall, f1_score = getAffiliationMetrics(test_label.copy(), test_pred.copy())
         # 传统的F1计算
-        precision = precision_score(test_label.copy(), test_pred.copy())
-        recall = recall_score(test_label.copy(), test_pred.copy())
-        f1 = f1_score(test_label.copy(), test_pred.copy())
+        # precision = precision_score(test_label.copy(), test_pred.copy())
+        # recall = recall_score(test_label.copy(), test_pred.copy())
+        # f1 = f1_score(test_label.copy(), test_pred.copy())
         res['precision'] = precision
         res['recall'] = recall
-        res['f1_score'] = f1
+        res['f1_score'] = f1_score
 
     return res
