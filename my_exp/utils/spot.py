@@ -95,7 +95,7 @@ class SPOT:
         level = level - floor(level)
 
         n_init = self.init_data.size
-
+        # 排序。找前 0.98 分位最大的
         S = np.sort(self.init_data)
         self.init_threshold = S[int(level * n_init)]
 
