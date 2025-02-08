@@ -15,6 +15,8 @@ from my_exp.utils.earlystop import EarlyStop
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 from my_exp.utils.evaluate import evaluate
+import matplotlib
+import matplotlib.pyplot as plt
 
 
 # from utils.evaluate import evaluate
@@ -124,6 +126,7 @@ class Exp:
             return trend + period
 
     def train(self):
+        epoch_losses = []
         for e in range(self.epochs):
             start = time()
 
@@ -133,6 +136,7 @@ class Exp:
                 self.optimizer.zero_grad()
                 loss = self._process_one_batch(batch_data, batch_time, batch_stable, batch_label, train=True)
                 train_loss.append(loss.item())
+                epoch_losses.append(loss.item())
                 loss.backward()
                 self.optimizer.step()
 
@@ -151,6 +155,15 @@ class Exp:
             if self.early_stopping.early_stop:
                 break
 
+        # 绘制单个loss
+        plt.figure(figsize=(8, 6))
+        plt.plot(len(epoch_losses), epoch_losses, marker='o', label='gelu')
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("不同激活函数下训练过程的损失变化")
+        plt.legend()
+        plt.grid(True)
+        plt.savefig("loss.png")
         self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl'))
 
     # def test(self):
