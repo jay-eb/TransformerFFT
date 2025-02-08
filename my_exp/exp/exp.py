@@ -98,7 +98,8 @@ class Exp:
             dropout=self.dropout,
             device=self.device,
             d=self.d,
-            t=self.t
+            t=self.t,
+            act=self.act
         ).to(self.device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=1e-4)
         self.early_stopping = EarlyStop(patience=self.patience, path=self.model_dir + self.dataset + '_model.pkl')
@@ -134,7 +135,7 @@ class Exp:
             train_loss = []
             for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.train_loader):
                 self.optimizer.zero_grad()
-                loss = self._process_one_batch(batch_data, batch_time, batch_stable, batch_label, train=True)
+                loss = self._process_one_batch(batch_data, batch_time, batch_stable, train=True)
                 train_loss.append(loss.item())
                 epoch_losses.append(loss.item())
                 loss.backward()
@@ -144,7 +145,7 @@ class Exp:
                 self.model.eval()
                 valid_loss = []
                 for (batch_data, batch_time, batch_stable, batch_label) in tqdm(self.valid_loader):
-                    loss = self._process_one_batch(batch_data, batch_time, batch_stable, batch_label, train=True)
+                    loss = self._process_one_batch(batch_data, batch_time, batch_stable, train=True)
                     valid_loss.append(loss.item())
 
             train_loss, valid_loss = np.average(train_loss), np.average(valid_loss)
@@ -154,17 +155,8 @@ class Exp:
             self.early_stopping(valid_loss, self.model)
             if self.early_stopping.early_stop:
                 break
-
-        # 绘制单个loss
-        plt.figure(figsize=(8, 6))
-        plt.plot(len(epoch_losses), epoch_losses, marker='o', label='gelu')
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.title("不同激活函数下训练过程的损失变化")
-        plt.legend()
-        plt.grid(True)
-        plt.savefig("loss.png")
         self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl'))
+        return epoch_losses
 
     # def test(self):
     #     # 加载训练好的模型

@@ -7,7 +7,7 @@ from my_exp.model.attention import OrdAttention, MixAttention, MixAttention2
 
 # 时间Transformer编码块
 class TemporalTransformerBlock(nn.Module):
-    def __init__(self, model_dim, ff_dim, atten_dim, head_num, dropout):
+    def __init__(self, model_dim, ff_dim, atten_dim, head_num, dropout, act):
         super(TemporalTransformerBlock, self).__init__()
         self.attention = OrdAttention(model_dim, atten_dim, head_num, dropout, True)
 
@@ -17,7 +17,13 @@ class TemporalTransformerBlock(nn.Module):
         nn.init.kaiming_normal_(self.conv2.weight, mode="fan_in", nonlinearity="leaky_relu")
 
         self.dropout = nn.Dropout(dropout)
-        self.activation = F.gelu
+
+        if act == 'gelu':
+            self.activation = F.gelu
+        elif act == 'relu':
+            self.activation = F.relu
+        elif act == 'leakyRelu':
+            self.activation = F.leaky_relu_
 
         self.norm = nn.LayerNorm(model_dim)
 
@@ -32,7 +38,7 @@ class TemporalTransformerBlock(nn.Module):
 
 # 空间Transformer编码块
 class SpatialTransformerBlock(nn.Module):
-    def __init__(self, window_size, model_dim, ff_dim, atten_dim, head_num, dropout):
+    def __init__(self, window_size, model_dim, ff_dim, atten_dim, head_num, dropout, act):
         super(SpatialTransformerBlock, self).__init__()
         self.attention = OrdAttention(window_size, atten_dim, head_num, dropout, True)
 
@@ -42,7 +48,12 @@ class SpatialTransformerBlock(nn.Module):
         nn.init.kaiming_normal_(self.conv2.weight, mode="fan_in", nonlinearity="leaky_relu")
 
         self.dropout = nn.Dropout(dropout)
-        self.activation = F.gelu
+        if act == 'gelu':
+            self.activation = F.gelu
+        elif act == 'relu':
+            self.activation = F.relu
+        elif act == 'leakyRelu':
+            self.activation = F.leaky_relu_
 
         self.norm = nn.LayerNorm(model_dim)
 
@@ -60,10 +71,10 @@ class SpatialTransformerBlock(nn.Module):
 
 
 class SpatialTemporalTransformerBlock(nn.Module):
-    def __init__(self, window_size, model_dim, ff_dim, atten_dim, head_num, dropout):
+    def __init__(self, window_size, model_dim, ff_dim, atten_dim, head_num, dropout, act):
         super(SpatialTemporalTransformerBlock, self).__init__()
-        self.time_block = TemporalTransformerBlock(model_dim, ff_dim, atten_dim, head_num, dropout)
-        self.feature_block = SpatialTransformerBlock(window_size, model_dim, ff_dim, atten_dim, head_num, dropout)
+        self.time_block = TemporalTransformerBlock(model_dim, ff_dim, atten_dim, head_num, dropout, act)
+        self.feature_block = SpatialTransformerBlock(window_size, model_dim, ff_dim, atten_dim, head_num, dropout, act)
         # * 2是因为下面将特征向量和时间向量cat到一起了
         self.conv1 = nn.Conv1d(in_channels=2 * model_dim, out_channels=ff_dim, kernel_size=(1,))
         self.conv2 = nn.Conv1d(in_channels=ff_dim, out_channels=model_dim, kernel_size=(1,))
@@ -71,7 +82,12 @@ class SpatialTemporalTransformerBlock(nn.Module):
         nn.init.kaiming_normal_(self.conv2.weight, mode="fan_in", nonlinearity="leaky_relu")
 
         self.dropout = nn.Dropout(dropout)
-        self.activation = F.gelu
+        if act == 'gelu':
+            self.activation = F.gelu
+        elif act == 'relu':
+            self.activation = F.relu
+        elif act == 'leakyRelu':
+            self.activation = F.leaky_relu_
 
         self.norm1 = nn.LayerNorm(2 * model_dim)
         self.norm2 = nn.LayerNorm(model_dim)
@@ -88,7 +104,7 @@ class SpatialTemporalTransformerBlock(nn.Module):
 
 
 class DecompositionBlock(nn.Module):
-    def __init__(self, model_dim, ff_dim, atten_dim, feature_num, head_num, dropout):
+    def __init__(self, model_dim, ff_dim, atten_dim, feature_num, head_num, dropout, act):
         super(DecompositionBlock, self).__init__()
         self.mixed_attention = MixAttention2(model_dim, atten_dim, head_num, dropout, False)
         self.ordinary_attention = OrdAttention(model_dim, atten_dim, head_num, dropout, True)
@@ -113,7 +129,12 @@ class DecompositionBlock(nn.Module):
         self.fc4 = nn.Linear(ff_dim, feature_num, bias=True)
 
         self.dropout = nn.Dropout(dropout)
-        self.activation = F.gelu
+        if act == 'gelu':
+            self.activation = F.gelu
+        elif act == 'relu':
+            self.activation = F.relu
+        elif act == 'leakyRelu':
+            self.activation = F.leaky_relu_
 
         self.norm1 = nn.LayerNorm(model_dim)
         self.norm2 = nn.LayerNorm(model_dim)

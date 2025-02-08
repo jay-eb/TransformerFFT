@@ -6,7 +6,7 @@ from my_exp.model.embedding import DataEmbedding, PositionEmbedding, TimeEmbeddi
 
 
 class DataEncoder(nn.Module):
-    def __init__(self, window_size, model_dim, ff_dim, atten_dim, feature_num, block_num, head_num, dropout):
+    def __init__(self, window_size, model_dim, ff_dim, atten_dim, feature_num, block_num, head_num, dropout, act):
         super(DataEncoder, self).__init__()
         self.data_embedding = DataEmbedding(model_dim, feature_num)
         self.position_embedding = PositionEmbedding(model_dim)
@@ -15,7 +15,7 @@ class DataEncoder(nn.Module):
         for i in range(block_num):
             dp = 0 if i == block_num - 1 else dropout
             self.encoder_blocks.append(
-                SpatialTemporalTransformerBlock(window_size, model_dim, ff_dim, atten_dim, head_num, dp)
+                SpatialTemporalTransformerBlock(window_size, model_dim, ff_dim, atten_dim, head_num, dp, act)
             )
 
     def forward(self, x):
@@ -50,20 +50,20 @@ class TimeEncoder(nn.Module):
 
 class DynamicDecomposition(nn.Module):
     def __init__(self, window_size, model_dim, ff_dim, atten_dim, feature_num, time_num, block_num, head_num, dropout,
-                 d):
+                 d, act):
         super(DynamicDecomposition, self).__init__()
         self.data_encoder = DataEncoder(window_size, model_dim, ff_dim, atten_dim, feature_num, block_num,
-                                        head_num, dropout)
+                                        head_num, dropout, act)
         self.time_encoder = TimeEncoder(model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout)
         self.period_encoder = DataEncoder(window_size, model_dim, ff_dim, atten_dim, feature_num, block_num,
-                                        head_num, dropout)
+                                        head_num, dropout, act)
 
         self.decomposition_blocks = nn.ModuleList()
         self.fc = nn.Linear(feature_num, 2)
         for i in range(block_num):
             dp = 0 if i == block_num - 1 else dropout
             self.decomposition_blocks.append(
-                DecompositionBlock(model_dim, ff_dim, atten_dim, feature_num, head_num, dp)
+                DecompositionBlock(model_dim, ff_dim, atten_dim, feature_num, head_num, dp, act)
             )
 
     def forward(self, trend, period, time):

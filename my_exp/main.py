@@ -1,6 +1,7 @@
 import argparse
 
 import torch
+from matplotlib import pyplot as plt
 
 from exp.exp import Exp
 
@@ -45,8 +46,27 @@ if __name__ == '__main__':
     config = vars(parser.parse_args())
     # 如果有GPU就取消注释
     torch.cuda.set_device(config['gpu_id'])
+    loss_history = {}
+    activation_functions =  ['gelu', 'relu', 'leakyRelu']
 
-    for ii in range(config['itr']):
+    for ii in activation_functions:
+        parser.add_argument('--act', type=str, default=ii, help='act')
         exp = Exp(config)
-        # exp.train()
-        exp.test()
+        losses = exp.train()
+        loss_history[ii] = losses
+        # exp.test()
+    # 绘制单个loss
+    plt.figure(figsize=(8, 6))
+    for act in activation_functions:
+        plt.plot(len(loss_history[act]), loss_history[act], marker='o', label=act)
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("不同激活函数下训练过程的损失变化")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig("loss.png")
+
+    # for ii in range(config['itr']):
+    #     exp = Exp(config)
+    #     # exp.train()
+    #     exp.test()

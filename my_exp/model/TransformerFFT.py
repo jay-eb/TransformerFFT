@@ -6,7 +6,7 @@ from my_exp.model.decomposition import DynamicDecomposition
 
 class TransformerFFT(nn.Module):
     def __init__(self, time_steps, beta_start, beta_end, window_size, model_dim, ff_dim, atten_dim, feature_num,
-                 time_num, block_num, head_num, dropout, device, d, t):
+                 time_num, block_num, head_num, dropout, device, d, t, act):
         super(TransformerFFT, self).__init__()
 
         self.device = device
@@ -23,7 +23,8 @@ class TransformerFFT(nn.Module):
             block_num=block_num,
             head_num=head_num,
             dropout=dropout,
-            d=d
+            d=d,
+            act=act
         )
 
     def forward(self, trend, period, time, p=0):
