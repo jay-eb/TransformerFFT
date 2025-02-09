@@ -28,7 +28,7 @@ class DataEncoder(nn.Module):
 
 
 class TimeEncoder(nn.Module):
-    def __init__(self, model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout):
+    def __init__(self, model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout, act):
         super(TimeEncoder, self).__init__()
         self.time_embed = TimeEmbedding(model_dim, time_num)
 
@@ -36,7 +36,7 @@ class TimeEncoder(nn.Module):
         for i in range(block_num):
             dp = 0 if i == block_num - 1 else dropout
             self.encoder_blocks.append(
-                TemporalTransformerBlock(model_dim, ff_dim, atten_dim, head_num, dp)
+                TemporalTransformerBlock(model_dim, ff_dim, atten_dim, head_num, dp, act)
             )
 
     def forward(self, x):
@@ -54,7 +54,7 @@ class DynamicDecomposition(nn.Module):
         super(DynamicDecomposition, self).__init__()
         self.data_encoder = DataEncoder(window_size, model_dim, ff_dim, atten_dim, feature_num, block_num,
                                         head_num, dropout, act)
-        self.time_encoder = TimeEncoder(model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout)
+        self.time_encoder = TimeEncoder(model_dim, ff_dim, atten_dim, time_num, block_num, head_num, dropout, act)
         self.period_encoder = DataEncoder(window_size, model_dim, ff_dim, atten_dim, feature_num, block_num,
                                         head_num, dropout, act)
 

@@ -126,8 +126,15 @@ class Exp:
             trend, period = self.model(batch_stable, batch_data, batch_time, 0.00)
             return trend + period
 
+    def count_parameters(self):
+        # Count the total number of parameters in the model
+        total_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+        print(f'Total number of parameters: {total_params}')
+        return total_params
+
     def train(self):
         epoch_losses = []
+        self.count_parameters()
         for e in range(self.epochs):
             start = time()
 
@@ -197,7 +204,7 @@ class Exp:
     #     print("==================================================\n")
 
     def test(self):
-        self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl', map_location=torch.device('cpu')))
+        self.model.load_state_dict(torch.load(self.model_dir + self.dataset + '_model.pkl'))
 
         with torch.no_grad():
             self.model.eval()
