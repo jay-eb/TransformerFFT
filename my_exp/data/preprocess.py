@@ -69,8 +69,11 @@ def getData2(path='./dataset/', dataset='PSM', topK=5, train_rate=0.8, split_tes
     init_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_train_date.npy'))
 
     test_data = np.load(path + dataset + '/' + dataset + '_test_data.npy')
+    test_data = test_data[1000:3000]
     test_time = getTimeEmbedding(np.load(path + dataset + '/' + dataset + '_test_date.npy'))
+    test_time = test_time[1000:3000]
     test_label = np.load(path + dataset + '/' + dataset + '_test_label.npy')
+    test_label = test_label[1000:3000]
     # 标准化处理，使得每个特征的均值为0，标准差为1
     scaler = StandardScaler()
     scaler.fit(init_data)
