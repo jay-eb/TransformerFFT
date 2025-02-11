@@ -246,6 +246,7 @@ class Exp:
         print("=============== " + self.dataset + " ===============\n")
 
     def plot_anomaly_comparison(true_data, my_scores, transformer_scores, labels):
+        matplotlib.use('TkAgg')
         timesteps = np.arange(len(true_data))
 
         fig, ax1 = plt.subplots(figsize=(15, 6))
@@ -282,4 +283,4 @@ class Exp:
 
         plt.title('Anomaly Detection Comparison')
         plt.tight_layout()
-        plt.show()
+        plt.savefig("comparison.png")
