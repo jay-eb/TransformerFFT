@@ -235,7 +235,7 @@ class Exp:
         test_score = np.mean(test_mse, axis=-1, keepdims=True)
 
         # 获取必要数据
-        true_data = test_src[:, 0]  # 假设取第一个特征作为展示
+        true_data = init_score[:, 0]  # 假设取第一个特征作为展示
         my_scores = test_score.reshape(-1)
         labels = test_label.reshape(-1)
         plot_anomaly_comparison(true_data, my_scores, [], labels)
