@@ -138,9 +138,9 @@ def test():
     # ... [你的原有测试代码] ...
 
     # 获取必要数据
-    init_score = np.load('../init_score.npy')[15587:15687]
-    test_score = np.load('../test_score.npy')[13500:13600]
-    test_label = np.load('../test_label.npy')[13500:13600]
+    init_score = np.load('../data/evaluate/init_score.npy')[15587:15687]
+    test_score = np.load('../data/evaluate/test_score.npy')[13500:13600]
+    test_label = np.load('../data/evaluate/test_label.npy')[13500:13600]
     true_data = init_score[:, 0]  # 假设取第一个特征作为展示
     my_scores = test_score.reshape(-1)
     labels = test_label.reshape(-1)
