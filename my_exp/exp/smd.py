@@ -73,13 +73,19 @@ for index, i in enumerate(feature_arr):
     data = moving_average(data_scaled[:, i], 4)
     dates = dates_sub[:len(data)]
     ax.plot(dates, data, color='black', alpha=0.8, linewidth=2)
+    ax.tick_params(axis='both', which='both', bottom=False, left=False, labelbottom=False, labelleft=False)
 
     # 设置标题和标签
     # ax.set_title(f'Feature {i + 1}', fontsize=12)
     # ax.set_xlabel('Timestamp', fontsize=10)
     # ax.set_ylabel('Normalized Value', fontsize=10)
     #ax.grid(alpha=0.3)
-    ax.axis('off')
+    # ax.axis('off')
+
+    for spine in ax.spines.values():
+        spine.set_visible(True)
+        spine.set_edgecolor('black')
+        spine.set_linewidth(1)
 
     # 绘制异常区域背景
     for start, end in anomaly_regions:
@@ -91,7 +97,7 @@ for i in range(num_features, len(axes)):
 
 # 调整布局
 plt.tight_layout()
-plt.savefig("smd_individual_features.png")
+plt.savefig("1.png")
 
 
 # for i, label in enumerate(labels_sub):
