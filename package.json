@@ -1,7 +1,7 @@
 {
-  "name": "@antv/x6",
-  "version": "2.18.1",
-  "description": "JavaScript diagramming library that uses SVG and HTML for rendering",
+  "name": "@antv/x6-common",
+  "version": "2.0.17",
+  "description": "Basic toolkit for X6",
   "main": "lib/index.js",
   "module": "es/index.js",
   "unpkg": "dist/index.js",
@@ -14,34 +14,31 @@
     "src"
   ],
   "keywords": [
-    "graph",
-    "diagram",
-    "flowchart",
-    "uml",
-    "x6-editor",
-    "editor",
-    "svg",
+    "util",
+    "toolkit",
     "x6",
     "antv"
   ],
   "dependencies": {
-    "@antv/x6-common": "^2.0.16",
-    "@antv/x6-geometry": "^2.0.5",
+    "lodash-es": "^4.17.15",
     "utility-types": "^3.10.0"
   },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.4"
+  },
   "author": {
-    "name": "bubkoo",
-    "email": "bubkoo.wy@gmail.com"
+    "name": "newbyvector",
+    "email": "vectorse@126.com"
   },
   "license": "MIT",
-  "homepage": "https://x6.antv.antgroup.com/tutorial/about",
+  "homepage": "https://x6.antv.antgroup.com",
   "bugs": {
     "url": "https://github.com/antvis/x6/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/antvis/x6.git",
-    "directory": "packages/x6"
+    "directory": "packages/x6-common"
   },
   "publishConfig": {
     "access": "public",
@@ -54,8 +51,7 @@
     "clean": "rss",
     "build:esm": "rss",
     "build:cjs": "rss",
-    "build:umd": "rollup -c --bundleConfigAsCjs",
-    "build:less": "rss",
+    "build:umd": "rss",
     "build:dev": "rss",
     "build:watch": "rss",
     "build:watch:esm": "rss",
