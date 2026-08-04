@@ -1,0 +1,366 @@
+VERSION "1.0.1"
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: VCCM ZCU_L ICM EMS SDM PEPS EAS LHM RHM IEBM MCU_R IDM TCP BMS IPU MCU_F ISG EVCC EPS APA FRM RLCR RRCR ASU
+
+BO_ 642 ZCU_L_4: 16 ZCU_L
+ SG_ ZCUL_FLWindowStatus : 39|8@0+ (1,0) [0|255] "" VCCM
+ SG_ ZCUL_RLWindowStatus : 47|8@0+ (1,0) [0|255] "" VCCM
+ SG_ ZCUL_turnlightoutfail : 50|1@0+ (1,0) [0|1] "" VCCM
+ SG_ ZCUL_turnlightCANfail : 51|1@0+ (1,0) [0|1] "" VCCM
+ SG_ ZCUL_lowlightoutfail : 52|1@0+ (1,0) [0|1] "" VCCM
+ SG_ ZCUL_highlightoutfail : 53|1@0+ (1,0) [0|1] "" VCCM
+ SG_ ZCUL_lowhighlightCANfail : 54|1@0+ (1,0) [0|1] "" VCCM
+
+BO_ 643 ICM_7: 16 VCCM
+ SG_ ICM_FRWindowsVoiControl : 37|4@0+ (1,0) [0|15] "" ZCU_L
+ SG_ ICM_FLWindowsVoiControl : 43|4@0+ (1,0) [0|15] "" ZCU_L
+ SG_ ICM_RLWindowsVoiControl : 47|4@0+ (1,0) [0|15] "" ZCU_L
+ SG_ ICM_RRWindowsVoiControl : 51|4@0+ (1,0) [0|15] "" ZCU_L
+
+BO_ 658 VCCM_11: 16 VCCM
+ SG_ VCCM_FRWindowStatus : 31|8@0+ (1,0) [0|255] "" ZCU_L
+ SG_ VCCM_RRWindowStatus : 39|8@0+ (1,0) [0|255] "" ZCU_L
+ SG_ VCCM_AbnormalPowerVoltage : 63|1@0+ (1,0) [0|1] "" ICM
+
+BO_ 891 ECC_Sensor: 32 VCCM
+ SG_ ECC_TambValid : 60|1@0+ (1,0) [0|1] "" EMS
+
+BO_ 304 BMS_1: 8 VCCM
+ SG_ BMS1_St_BatteryMode : 22|4@0+ (1,0) [0|15] "" ZCU_L
+ SG_ BMS1_W_HVBattDanger : 61|1@0+ (1,0) [0|1] "" VCCM
+
+BO_ 759 ZCU_L_HOD: 8 ZCU_L
+ SG_ HOD_FC_BAT_HIGH : 33|1@0+ (1,0) [0|1] "" VCCM
+
+BO_ 314 VCU_1: 8 VCCM
+ SG_ VCU1_St_Bpedal : 8|1@0+ (1,0) [0|1] "" ZCU_L
+ SG_ VCU1_F_Bpedal : 9|1@0+ (1,0) [0|1] "" BMS,IPU,MCU_F,MCU_R
+ SG_ VCU1_F_AccPedalError : 11|1@0+ (1,0) [0|1] "" SDM
+ SG_ VCU1_N_ActualGear : 27|4@0+ (1,0) [0|15] "" ZCU_L,PEPS
+ SG_ VCU1_F_ActualGear : 28|1@0+ (1,0) [0|1] "" IPU,MCU_F,MCU_R
+
+BO_ 269 IEBM_1_S1: 8 VCCM
+ SG_ ESC_TCSFault : 9|1@0+ (1,0) [0|1] "" SDM
+ SG_ ESC_ABSFault : 11|1@0+ (1,0) [0|1] "" SDM
+ SG_ ESC_FaultStatus : 34|3@0+ (1,0) [0|7] "" SDM
+
+BO_ 271 IEBM_1: 64 IEBM
+ SG_ ESC_VDCFault : 10|1@0+ (1,0) [0|1] "" VCCM,IDM,APA,FRM,RLCR,RRCR,ASU
+ SG_ ESC_EBDFault : 12|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+ SG_ ESC_VehiclESCspeed : 47|13@0+ (0.05625,0) [0|360] "km/h" VCCM
+ SG_ ESC_FLWheelSpeedPulse : 79|15@0+ (1,0) [0|32767] "" VCCM
+ SG_ ESC_FRWheelSpeedPulse : 95|15@0+ (1,0) [0|32767] "" VCCM
+ SG_ ESC_RLWheelSpeedPulse : 143|15@0+ (1,0) [0|32767] "" VCCM
+ SG_ ESC_RRWheelSpeedPulse : 159|15@0+ (1,0) [0|32767] "" VCCM
+ SG_ ESC_FLWheelSpeedPulseInvalid : 80|1@0+ (1,0) [0|1] "" MCU_R
+ SG_ ESC_FRWheelSpeedPulseInvalid : 96|1@0+ (1,0) [0|1] "" MCU_R
+ SG_ ESC_RLWheelSpeedPulseInvalid : 144|1@0+ (1,0) [0|1] "" MCU_R
+ SG_ ESC_RRWheelSpeedPulseInvalid : 160|1@0+ (1,0) [0|1] "" MCU_R
+ SG_ ESC_VehiclSpeedInvalid : 36|1@0+ (1,0) [0|1] "" EPS,VCCM,IDM,APA,FRM,RLCR,RRCR,ASU
+ SG_ IBS_BrakeFluid_Warning : 62|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+ SG_ ESC_HHC_FaultSts : 104|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+ SG_ ESC_HDC_FaultSts : 105|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+ SG_ ESC_CDP_FaultSts : 106|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+ SG_ ESC_AVH_FaultSts : 107|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+
+BO_ 299 IEBM_3_S1: 8 VCCM
+ SG_ EPB_SystemStatus : 11|4@0+ (1,0) [0|15] "" SDM
+
+BO_ 298 IEBM_3: 16 VCCM
+ SG_ EPB_WarnLampStatus : 36|2@0+ (1,0) [0|3] "" VCCM,IDM,APA
+ SG_ EPB_SwitchSts : 38|2@0+ (1,0) [0|3] "" ZCU_L
+ SG_ EPB_SwitchStsVal : 39|1@0+ (1,0) [0|1] "" VCCM,IDM,APA
+
+BO_ 641 ZCU_1: 16 ZCU_L
+ SG_ ZCUL_AbnormalPowerVoltage : 10|1@0+ (1,0) [0|1] "" VCCM
+ SG_ ZCUL_SystemPowerMode : 9|2@0+ (1,0) [0|3] "" VCCM,EAS,PEPS,LHM,RHM
+ SG_ ZCUL_SystemPowerModeValid : 12|1@0+ (1,0) [0|1] "" BMS,ISG,EVCC
+
+BO_ 1054 ZCU_3: 16 ZCU_L
+ SG_ ZCUL_DriverSeatCANfail : 17|1@0+ (1,0) [0|1] "" VCCM
+ SG_ ZCUL_DriverSeatFail : 23|2@0+ (1,0) [0|3] "" ICM
+
+BO_ 516 IDM_2: 64 IDM
+ SG_ IDM_Fr_AVM_Info : 301|2@0+ (1,0) [0|3] "" VCCM
+ SG_ IDM_Ri_AVM_Info : 303|2@0+ (1,0) [0|3] "" VCCM
+ SG_ IDM_Le_AVM_Info : 305|2@0+ (1,0) [0|3] "" VCCM
+ SG_ IDM_Re_AVM_Info : 307|2@0+ (1,0) [0|3] "" VCCM
+ SG_ IDM_FSV_Info : 309|2@0+ (1,0) [0|3] "" VCCM
+
+BO_ 1025 TCP_4: 16 TCP
+ SG_ TCP_SystemFaultSts : 41|2@0+ (1,0) [0|3] "" VCCM
+ SG_ TCP_LostCommunicationWarn : 43|2@0+ (1,0) [0|3] "" ICM
+
+BO_ 832 BMS_2: 24 BMS
+ SG_ BMS2_F_Isolation : 13|2@0+ (1,0) [0|3] "" VCCM
+ SG_ BMS2_F_BattLowTemp : 141|2@0+ (1,0) [0|3] "" VCCM
+ SG_ BMS2_F_BattOverTemp : 143|2@0+ (1,0) [0|3] "" VCCM
+
+BO_ 801 BMS_5: 24 BMS
+ SG_ BMS5_F_ThermalRunawayFault : 141|2@0+ (1,0) [0|3] "" VCCM,IPU
+
+BO_ 827 RMCU_2: 16 MCU_R
+ SG_ RMCU2_F_bDernMotTemp : 49|2@0+ (1,0) [0|3] "" VCCM
+ SG_ RMCU2_F_bDernTemp : 53|2@0+ (1,0) [0|3] "" VCCM
+
+BO_ 1218 VCU_9: 48 VCCM
+ SG_ VCU_ICM_W_BatteryFault : 13|1@0+ (1,0) [0|1] "" TCP
+ SG_ VCU_ICM_W_12VChgLampReq : 15|1@0+ (1,0) [0|1] "" TCP
+ SG_ VCU_ICM_W_MotorFault : 53|1@0+ (1,0) [0|1] "" TCP
+ SG_ VCU_ICM_W_TurtleLampReq : 109|1@0+ (1,0) [0|1] "" TCP
+ SG_ VCU_ICM_W_PowerTrainLampReq : 111|2@0+ (1,0) [0|3] "" TCP
+
+BO_ 307 SDM_1: 8 VCCM
+ SG_ SDMFaultSts : 27|2@0+ (1,0) [0|3] "" VCCM,BMS,MCU_F,MCU_R,IPU,ISG
+
+BO_ 1037 VCCM_3: 24 VCCM
+ SG_ VCCM_ICM_SysFault : 94|1@0+ (1,0) [0|1] "" ICM
+
+BO_ 297 EPS_0x129: 24 EPS
+ SG_ EpsFltSts : 10|2@0+ (1,0) [0|3] "" VCCM,IDM,APA
+
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 65535;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 65535;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","CyclicAndSpontanX","Event";
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_  "VFrameFormat" "";
+
+BA_ "VFrameFormat" BO_ 642 14;
+BA_ "GenMsgCycleTime" BO_ 642 50;
+BA_ "GenMsgSendType" BO_ 642 0;
+BA_ "GenMsgILSupport" BO_ 642 1;
+
+BA_ "VFrameFormat" BO_ 643 14;
+BA_ "GenMsgCycleTime" BO_ 643 10;
+BA_ "GenMsgSendType" BO_ 643 2;
+BA_ "GenMsgNrOfRepetition" BO_ 643 10;
+BA_ "GenMsgILSupport" BO_ 643 1;
+
+BA_ "VFrameFormat" BO_ 658 14;
+BA_ "GenMsgCycleTime" BO_ 658 50;
+BA_ "GenMsgSendType" BO_ 658 0;
+BA_ "GenMsgILSupport" BO_ 658 1;
+
+BA_ "VFrameFormat" BO_ 891 14;
+BA_ "GenMsgCycleTime" BO_ 891 100;
+BA_ "GenMsgSendType" BO_ 891 0;
+BA_ "GenMsgILSupport" BO_ 891 1;
+
+BA_ "VFrameFormat" BO_ 304 14;
+BA_ "GenMsgCycleTime" BO_ 304 10;
+BA_ "GenMsgSendType" BO_ 304 0;
+BA_ "GenMsgILSupport" BO_ 304 1;
+
+BA_ "VFrameFormat" BO_ 759 14;
+BA_ "GenMsgCycleTime" BO_ 759 50;
+BA_ "GenMsgSendType" BO_ 759 0;
+BA_ "GenMsgILSupport" BO_ 759 1;
+
+BA_ "VFrameFormat" BO_ 314 14;
+BA_ "GenMsgCycleTime" BO_ 314 10;
+BA_ "GenMsgSendType" BO_ 314 0;
+BA_ "GenMsgILSupport" BO_ 314 1;
+
+BA_ "VFrameFormat" BO_ 269 14;
+BA_ "GenMsgCycleTime" BO_ 269 10;
+BA_ "GenMsgSendType" BO_ 269 0;
+BA_ "GenMsgILSupport" BO_ 269 1;
+
+BA_ "VFrameFormat" BO_ 271 14;
+BA_ "GenMsgCycleTime" BO_ 271 10;
+BA_ "GenMsgSendType" BO_ 271 0;
+BA_ "GenMsgILSupport" BO_ 271 1;
+
+BA_ "VFrameFormat" BO_ 299 14;
+BA_ "GenMsgCycleTime" BO_ 299 20;
+BA_ "GenMsgSendType" BO_ 299 0;
+BA_ "GenMsgILSupport" BO_ 299 1;
+
+BA_ "VFrameFormat" BO_ 298 14;
+BA_ "GenMsgCycleTime" BO_ 298 20;
+BA_ "GenMsgSendType" BO_ 298 0;
+BA_ "GenMsgILSupport" BO_ 298 1;
+
+BA_ "VFrameFormat" BO_ 641 14;
+BA_ "GenMsgCycleTime" BO_ 641 50;
+BA_ "GenMsgSendType" BO_ 641 0;
+BA_ "GenMsgILSupport" BO_ 641 1;
+
+BA_ "VFrameFormat" BO_ 1054 14;
+BA_ "GenMsgCycleTime" BO_ 1054 100;
+BA_ "GenMsgSendType" BO_ 1054 0;
+BA_ "GenMsgILSupport" BO_ 1054 1;
+
+BA_ "VFrameFormat" BO_ 516 14;
+BA_ "GenMsgCycleTime" BO_ 516 50;
+BA_ "GenMsgSendType" BO_ 516 0;
+BA_ "GenMsgILSupport" BO_ 516 1;
+
+BA_ "VFrameFormat" BO_ 1025 14;
+BA_ "GenMsgCycleTime" BO_ 1025 200;
+BA_ "GenMsgSendType" BO_ 1025 0;
+BA_ "GenMsgILSupport" BO_ 1025 1;
+
+BA_ "VFrameFormat" BO_ 832 14;
+BA_ "GenMsgCycleTime" BO_ 832 200;
+BA_ "GenMsgSendType" BO_ 832 0;
+BA_ "GenMsgILSupport" BO_ 832 1;
+
+BA_ "VFrameFormat" BO_ 801 14;
+BA_ "GenMsgCycleTime" BO_ 801 1000;
+BA_ "GenMsgSendType" BO_ 801 0;
+BA_ "GenMsgILSupport" BO_ 801 1;
+
+BA_ "VFrameFormat" BO_ 827 14;
+BA_ "GenMsgCycleTime" BO_ 827 100;
+BA_ "GenMsgSendType" BO_ 827 0;
+BA_ "GenMsgILSupport" BO_ 827 1;
+
+BA_ "VFrameFormat" BO_ 1218 14;
+BA_ "GenMsgCycleTime" BO_ 1218 200;
+BA_ "GenMsgSendType" BO_ 1218 0;
+BA_ "GenMsgILSupport" BO_ 1218 1;
+
+BA_ "VFrameFormat" BO_ 307 14;
+BA_ "GenMsgCycleTime" BO_ 307 10;
+BA_ "GenMsgSendType" BO_ 307 0;
+BA_ "GenMsgILSupport" BO_ 307 1;
+
+BA_ "VFrameFormat" BO_ 1037 14;
+BA_ "GenMsgCycleTime" BO_ 1037 100;
+BA_ "GenMsgSendType" BO_ 1037 0;
+BA_ "GenMsgILSupport" BO_ 1037 1;
+
+BA_ "VFrameFormat" BO_ 297 14;
+BA_ "GenMsgCycleTime" BO_ 297 10;
+BA_ "GenMsgSendType" BO_ 297 0;
+BA_ "GenMsgILSupport" BO_ 297 1;
+
+VAL_ 643 ICM_FRWindowsVoiControl 0 "Default" 1 "10% Openness" 2 "20% Openness" 3 "30% Openness" 4 "40% Openness" 5 "50% Openness" 6 "60% Openness" 7 "70% Openness" 8 "80% Openness" 9 "90% Openness" 10 "100% Full" 11 "Close the windows" 12 "The window stops moving";
+VAL_ 643 ICM_FLWindowsVoiControl 0 "Default" 1 "10% Openness" 2 "20% Openness" 3 "30% Openness" 4 "40% Openness" 5 "50% Openness" 6 "60% Openness" 7 "70% Openness" 8 "80% Openness" 9 "90% Openness" 10 "100% Full" 11 "Close the windows" 12 "The window stops moving";
+VAL_ 643 ICM_RLWindowsVoiControl 0 "Default" 1 "10% Openness" 2 "20% Openness" 3 "30% Openness" 4 "40% Openness" 5 "50% Openness" 6 "60% Openness" 7 "70% Openness" 8 "80% Openness" 9 "90% Openness" 10 "100% Full" 11 "Close the windows" 12 "The window stops moving";
+VAL_ 643 ICM_RRWindowsVoiControl 0 "Default" 1 "10% Openness" 2 "20% Openness" 3 "30% Openness" 4 "40% Openness" 5 "50% Openness" 6 "60% Openness" 7 "70% Openness" 8 "80% Openness" 9 "90% Openness" 10 "100% Full" 11 "Close the windows" 12 "The window stops moving";
+
+VAL_ 891 ECC_TambValid 0 "Invalid" 1 "Valid";
+
+VAL_ 304 BMS1_St_BatteryMode 0 "Init" 1 "HV Off" 2 "HV On" 3 "AC Charge" 4 "DC Charge" 5 "Precharge" 6 "Failure";
+VAL_ 304 BMS1_W_HVBattDanger 0 "Not warning" 1 "Warning" ;
+
+VAL_ 759 HOD_FC_BAT_HIGH 0 "No Fault" 1 "Fault Occurred";
+
+VAL_ 314 VCU1_St_Bpedal 0 "Not Pressed" 1 "Pressed";
+VAL_ 314 VCU1_F_Bpedal 0 "No fault" 1 "Fault" ;
+VAL_ 314 VCU1_F_AccPedalError 0 "Invalid(Fault)" 1 "Valid(No fault)";
+VAL_ 314 VCU1_N_ActualGear 0 "Init" 1 "P" 2 "N" 3 "R" 4 "D" 15 "Error Value";
+VAL_ 314 VCU1_F_ActualGear 0 "Invalid" 1 "Valid" ;
+
+VAL_ 269 ESC_TCSFault 0 "Not Fault" 1 "Fault";
+VAL_ 269 ESC_ABSFault 0 "Not Fault" 1 "Fault";
+VAL_ 269 ESC_FaultStatus 0 "No fault" 1 "Failure level1" 2 "Failure level2";
+
+VAL_ 271 ESC_VDCFault 0 "Not Fault" 1 "Fault" ;
+VAL_ 271 ESC_EBDFault 0 "Not Fault" 1 "Fault" ;
+VAL_ 271 ESC_VehiclSpeedInvalid 0 "Invalid" 1 "Valid" ;
+VAL_ 271 IBS_BrakeFluid_Warning 0 "Normal" 1 "low/empty" ;
+VAL_ 271 ESC_HHC_FaultSts 0 "No fault" 1 "Fault" ;
+VAL_ 271 ESC_HDC_FaultSts 0 "No fault" 1 "Fault" ;
+VAL_ 271 ESC_CDP_FaultSts 0 "No fault" 1 "Fault" ;
+VAL_ 271 ESC_AVH_FaultSts 0 "No fault" 1 "Fault" ;
+VAL_ 271 ESC_FLWheelSpeedPulseInvalid 0 "Invalid" 1 "Valid";
+VAL_ 271 ESC_FRWheelSpeedPulseInvalid 0 "Invalid" 1 "Valid";
+VAL_ 271 ESC_RLWheelSpeedPulseInvalid 0 "Invalid" 1 "Valid";
+VAL_ 271 ESC_RRWheelSpeedPulseInvalid 0 "Invalid" 1 "Valid";
+
+VAL_ 299 EPB_SystemStatus 0 "Released" 1 "Applied" 2 "Releasing" 3 "Fault_Unknown state" 4 "Applying" 5 "Disengaged";
+
+VAL_ 298 EPB_WarnLampStatus 0 "OFF" 1 "ON" 2 "Blinking" 3 "Reserved" ;
+VAL_ 298 EPB_SwitchSts 0 "Not operated" 1 "Operated";
+VAL_ 298 EPB_SwitchStsVal 0 "Invalid" 1 "Valid" ;
+
+VAL_ 641 ZCUL_AbnormalPowerVoltage 0 "Normal (9-16V)" 1 "Abnormal (<9V or >16V)";
+VAL_ 641 ZCUL_SystemPowerMode 0 "OFF" 1 "ON" 2 "RUN" 3 "Reserved";
+VAL_ 641 ZCUL_SystemPowerModeValid 0 "Invalid" 1 "Valid" ;
+
+VAL_ 1054 ZCUL_DriverSeatCANfail 0 "Normal" 1 "Fault";
+VAL_ 1054 ZCUL_DriverSeatFail 0 "Reserve" 1 "Normal" 2 "Fault" 3 "Reserved" ;
+
+VAL_ 642 ZCUL_FLWindowStatus 1 "Fully Closed (0%)" 101 "Fully Open (100%)";
+VAL_ 642 ZCUL_RLWindowStatus 1 "Fully Closed (0%)" 101 "Fully Open (100%)";
+VAL_ 642 ZCUL_turnlightoutfail 0 "Normal" 1 "Fault";
+VAL_ 642 ZCUL_turnlightCANfail 0 "Normal" 1 "Fault";
+VAL_ 642 ZCUL_lowlightoutfail 0 "Normal" 1 "Fault";
+VAL_ 642 ZCUL_highlightoutfail 0 "Normal" 1 "Fault";
+VAL_ 642 ZCUL_lowhighlightCANfail 0 "Normal" 1 "Fault";
+
+VAL_ 658 VCCM_FRWindowStatus 1 "Fully Closed (0%)" 101 "Fully Open (100%)";
+VAL_ 658 VCCM_RRWindowStatus 1 "Fully Closed (0%)" 101 "Fully Open (100%)";
+VAL_ 658 VCCM_AbnormalPowerVoltage 0 "Normal between 9-16V" 1 "Fault outside 9-16V" ;
+
+VAL_ 516 IDM_Fr_AVM_Info 0 "Camera normal" 1 "Camera failure" 2 "Camera blocked" 3 "Reserved";
+VAL_ 516 IDM_Ri_AVM_Info 0 "Camera normal" 1 "Camera failure" 2 "Camera blocked" 3 "Reserved" ;
+VAL_ 516 IDM_Le_AVM_Info 0 "Camera normal" 1 "Camera failure" 2 "Camera blocked" 3 "Reserved" ;
+VAL_ 516 IDM_Re_AVM_Info 0 "Camera normal" 1 "Camera failure" 2 "Camera blocked" 3 "Reserved" ;
+VAL_ 516 IDM_FSV_Info 0 "Camera normal" 1 "Camera failure" 2 "Camera blocked" 3 "Reserved" ;
+
+VAL_ 1025 TCP_SystemFaultSts 0 "No fault" 1 "Fault" 2 "Reserved_Selfcheck" 3 "Reserved";
+VAL_ 1025 TCP_LostCommunicationWarn 0 "No warning" 1 "Warning Level 1" 2 "Warning Level 2" 3 "Reserved" ;
+
+VAL_ 832 BMS2_F_Isolation 0 "Normal" 1 "Level 1_Fault" 2 "Level 2_Fault" 3 "Level 3_Fault" ;
+VAL_ 832 BMS2_F_BattLowTemp 0 "Normal" 1 "Low-temperature Alarm/ Heating before Charge" 2 "Low-temperature Alarm/ Heating before Drive" 3 "Reserved" ;
+VAL_ 832 BMS2_F_BattOverTemp 0 "Normal" 1 "Level 1/ Warning" 2 "Level 2/ Derating(Not Zero)" 3 "Level 3/ Derating to Zero" ;
+
+VAL_ 801 BMS5_F_ThermalRunawayFault 0 "Normal" 1 "Level 1_Fault" 2 "Level 2_Fault" 3 "Level 3_Fault" ;
+
+VAL_ 827 RMCU2_F_bDernMotTemp 0 "Normal" 1 "Level 1_Fault" 2 "Level 2_Fault" 3 "Level 3_Fault" ;
+VAL_ 827 RMCU2_F_bDernTemp 0 "Normal" 1 "Level 1_Fault" 2 "Level 2_Fault" 3 "Level 3_Fault" ;
+
+VAL_ 1218 VCU_ICM_W_BatteryFault 0 "Normal" 1 "Bettery Fault" ;
+VAL_ 1218 VCU_ICM_W_12VChgLampReq 0 "No Request" 1 "Request" ;
+VAL_ 1218 VCU_ICM_W_MotorFault 0 "Normal" 1 "Motor System Fault" ;
+VAL_ 1218 VCU_ICM_W_TurtleLampReq 0 "No request" 1 "Request" ;
+VAL_ 1218 VCU_ICM_W_PowerTrainLampReq 0 "No request" 1 "Yellow Request" 2 "Red Request" 3 "Reserve" ;
+
+VAL_ 307 SDMFaultSts 0 "Not Fault" 1 "Fault" 2 "Factory Model" 3 "System Self-test" ;
+
+VAL_ 1037 VCCM_ICM_SysFault 0 "Off" 1 "system error text messages" ;
+
+VAL_ 297 EpsFltSts 0 "WarnLamp off" 1 "WarnLamp flash(reserved)" 2 "Yellow WarnLamp on" 3 "Red WarnLamp on" ;
